@@ -1,0 +1,91 @@
+{% extends "layouts/base-fullscreen.html" %}
+
+{% block title %} Login {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+<main>
+    <!-- Section -->
+    <section class="d-flex align-items-center my-5 mt-lg-6 mb-lg-5">
+        <div class="container">
+            <div class="row justify-content-center form-bg-image1"
+                data-background-lg="/static/assets/img/illustrations/img.jpeg">
+                <div class="col-12 d-flex align-items-center justify-content-center">
+                    <div class="bg-white shadow-soft border rounded border-light p-4 p-lg-5 w-100 fmxw-500">
+                        <div class="text-center text-md-center mb-4 mt-md-0">
+                            <img src="{{url_for('static', filename='assets/img/icon_av_cloud.png')}}" alt=logo width="130"
+                                height="110">
+                            <h1 class="mb-0 h3">
+                                Welcome to AV Cloud
+                            </h1>
+                            <br />
+                            <p>
+                                {% if msg %}
+                                {{ msg | safe }}
+                                {% else %}
+                                Please login to the portal with your credentials
+                                {% endif %}
+                            </p>
+                        </div>
+
+                        <form method="post" action="" class="mt-4">
+
+                            {{ form.hidden_tag() }}
+
+                            <!-- Form -->
+                            <div class="form-group mb-4">
+                                <label for="email">Username</label>
+                                <div class="input-group">
+                                    <span class="input-group-text" id="basic-addon1"><span
+                                            class="fas fa-user-circle"></span></span>
+                                    {{ form.username(placeholder="Username", class="form-control") }}
+                                </div>
+                            </div>
+                            <!-- End of Form -->
+                            <div class="form-group">
+                                <!-- Form -->
+                                <div class="form-group mb-4">
+                                    <label for="password">Your Password</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text" id="basic-addon2"><span
+                                                class="fas fa-unlock-alt"></span></span>
+                                        {{ form.password(placeholder="Password", class="form-control", type="password")
+                                        }}
+                                    </div>
+                                </div>
+                                <!-- End of Form -->
+                                <div class="d-flex justify-content-between align-items-top mb-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="" id="remember">
+                                        <label class="form-check-label mb-0" for="remember">
+                                            Remember me
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-grid">
+                                <button type="submit" name="login" class="login-button">Login</button>
+                            </div>
+                        </form>
+
+                        <div class="d-flex justify-content-center align-items-center mt-4">
+                            <span class="fw-normal">
+                                New User?
+                                <a href="{{ url_for('authentication_blueprint.register') }}" class="fw-bold">Click here to create your account</a>
+                            </span>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}
