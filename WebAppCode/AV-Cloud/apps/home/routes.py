@@ -100,6 +100,13 @@ def dashboardadmin():
     print(random_no)
     return render_template('home/dashboard-admin.html', query=data, user_query=user_data, battery=random_no, zip=zip)
 
+@blueprint.route('/dashboard-imagedb', methods=['GET', 'POST'])
+@login_required
+def dashboardimagedb():
+
+    return render_template('home/dashboard-imagedb.html')
+
+
 
 @blueprint.route('/dashboard-owner', methods=['GET', 'POST'])
 @login_required
