@@ -30,7 +30,7 @@ def dashboard():
             # We need user id to fetch user old transaction details.
             print(request.form['source'])
             print(request.form['destination'])
-            distance, duration, fare = calculateDistance(request.form['source'], request.form['destination'])
+            distance, duration, fare = calculateDistance(request.form['source'], request.form['destination'],cartype)
             print("fare", fare)
             print("duraction", duration)
             ride = Ride(
@@ -55,7 +55,7 @@ def dashboard():
         return render_template('home/dashboard.html', segment='dashboard', form=dashboard_form)
 
 
-def calculateDistance(source, dest):
+def calculateDistance(source, dest,cartype):
     # Setting base price
     base_price = 2
 
@@ -80,7 +80,14 @@ def calculateDistance(source, dest):
     distance = round(float(distance) * 0.62, 2)
 
     # Calculating price based on base price
-    fare = round(distance * base_price, 2)
+    fare = round(distance * base_price, 2) 
+
+    #Fares: sedan= fare *1 , SUV =fare*1.5 ,Limousine =fare*2
+
+    if cartype =="SUV":
+        fare= round(fare*1.5)
+    elif cartype =="Limousine":
+        fare*=2
 
     return distance, duration, fare
 
@@ -112,7 +119,7 @@ def dashboardowner():
         carrides_owned.extend(rides)
 
     for i in carrides_owned:
-        Amount = Amount + i.payment
+        Amount = int(Amount) + int(i.payment)
     return render_template('home/dashboard-owner.html', query=data, carrides=carrides_owned, user=current_user,
                            amount=Amount)
 

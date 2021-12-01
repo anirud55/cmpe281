@@ -87,7 +87,7 @@ def register():
             password=request.form['password'],
             email=request.form['email'],
             role=request.form['role'],
-            amount=100,
+            amount=150,
         )
         db.session.add(user)
         db.session.commit()
