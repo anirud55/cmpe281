@@ -2,6 +2,8 @@
 
 from apps.home import blueprint
 from flask import render_template, redirect, url_for, request, session, send_file, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, Response, session
+from flask_bootstrap import Bootstrap
 from flask_login import login_required, current_user
 
 from jinja2 import TemplateNotFound
@@ -13,6 +15,24 @@ from datetime import date
 import random
 import requests, json
 import re
+import boto3
+from apps.config import S3_BUCKET, S3_KEY, S3_SECRET
+from flask import session
+
+app = Flask(__name__)
+Bootstrap(app)
+app.secret_key = 'secret'
+# app.jinja_env.filters['datetimeformat'] = datetimeformat
+# app.jinja_env.filters['file_type'] = file_type
+
+s3 = boto3.client('s3',
+                    aws_access_key_id=S3_KEY,
+                    aws_secret_access_key= S3_SECRET
+)
+                    # aws_session_token=keys.AWS_SESSION_TOKEN)
+
+BUCKET_NAME=S3_BUCKET
+
 
 
 @blueprint.route('/dashboard', methods=['GET', 'POST'])
@@ -100,12 +120,36 @@ def dashboardadmin():
     print(random_no)
     return render_template('home/dashboard-admin.html', query=data, user_query=user_data, battery=random_no, zip=zip)
 
-@blueprint.route('/dashboard-imagedb', methods=['GET', 'POST'])
+
+@blueprint.route('/dashboardimagedb', methods=['GET', 'POST'])
 @login_required
 def dashboardimagedb():
+    s3 = boto3.resource(
+        's3',
+        aws_access_key_id=S3_KEY,
+        aws_secret_access_key=S3_SECRET
+        )
+    the_bucket = s3.Bucket('avimagedb')
+    summaries = the_bucket.objects.all()
 
-    return render_template('home/dashboard-imagedb.html')
+    return render_template('home/dashboardimagedb.html', my_bucket=the_bucket, dashboardimagedb=summaries)
 
+@app.route('/download', methods=['POST'])
+def download():
+    key = request.form['key']
+    s3 = boto3.resource(
+        's3',
+        aws_access_key_id=S3_KEY,
+        aws_secret_access_key=S3_SECRET
+        )
+    the_bucket = s3.Bucket('avimagedb')
+    file_obj = the_bucket.Object(key).get()
+
+    return Response(
+        file_obj['Body'].read(),
+        mimetype='text/plain',
+        headers={"Content-Disposition": "attachment;filename={}".format(key)}
+    )
 
 
 @blueprint.route('/dashboard-owner', methods=['GET', 'POST'])
@@ -161,4 +205,5 @@ def transactions():
 def storage():
     print("hello")
     return render_template('home/storage.html', segment='index', contents=contents)
+
 
