@@ -11,7 +11,7 @@
     <div class="card-header d-sm-flex flex-row align-items-center flex-0">
         <div class="d-block mb-3 mb-sm-0">
             <div class="h5 fw-normal mb-2">All Car Images</div>
-            <p>Created: {{ my_bucket.creation_date }}</p>
+            <!-- <p>Created: {{ my_bucket.creation_date }}</p> -->
         </div>
     </div>
     <table class="table table-striped">
@@ -20,10 +20,10 @@
           <th>Last Modified</th>
           <th></th>
         </tr>
-        {% for f in files %}
+        <!-- {% for f in files %} -->
         <tr>
-          <td>{{ f.key }}</td>
-          <td>{{ f.last_modified }}</td>
+          <!-- <td>{{ f.key }}</td> -->
+          <!-- <td>{{ f.last_modified }}</td> -->
           <td class="td-buttons">
             <form class="delete-form" action="{{ url_for('delete') }}" method="POST">
               <input type="hidden" name="key" value="{{ f.key }}">
@@ -39,7 +39,7 @@
             </form>
           </td>
         </tr>
-        {% endfor %}
+        <!-- {% endfor %} -->
       </table>
 </div>
 
