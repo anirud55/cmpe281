@@ -1,0 +1,201 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Admin Dashboard {% endblock %}
+
+{%  block content %}
+ <div style="margin: 10px 0 0 10px;width: 1000px">
+     <h1 class="h1-font" style="color: #1d1d1d">Admin Dashboard</h1>
+     <br>
+         <div class="vehicle-heading">
+             <h3 class="h3-font">List of registered vehicles:</h3>
+             <table class="vehicle-list">
+                 {% for car in all_carmodels %}
+                     <TR>
+                         <TD style="font-weight: bold">{{ car }}</TD>
+                     </TR>
+                 {% endfor %}
+             </table>
+         </div>
+
+     <h2 class="h2-font">Total Users: {{ total_users }}</h2>
+     <br>
+
+     <h3 class="h3-font">System Admin: {{ system_admin }}</h3>
+     <h3 class="h3-font">Car Owners: {{ car_owners }}</h3>
+     <h3 class="h3-font">Car Users: {{ car_users }}</h3>
+     <br>
+
+     <h2 class="h2-font">Total Cars: {{ total_cars }}</h2>
+     <br>
+     <h3 class="h3-font">Sedan: {{ num_sedan }}</h3>
+     <h3 class="h3-font">SUV: {{ num_suv }}</h3>
+     <h3 class="h3-font">Limousine: {{ num_limo }}</h3>
+
+     <br>
+
+
+
+     <div id="piechart_3d1" style="width: 900px; height: 500px;"></div>
+     <div id="pie1"></div>
+     <br>
+     <br>
+
+
+     <div id="piechart_3d2" style="width: 900px; height: 500px;"></div>
+     <div id="pie2"></div>
+     <br>
+     <br>
+
+        <div id="curve_chart" style="width: 900px; height: 500px"></div>
+        <br>
+        <div id='curve'></div>
+        <br>
+        <br>
+
+     <div id="donutchart" style="width: 900px; height: 500px;"></div>
+            <div id="donut"></div>
+            <br>
+            <br>
+
+     <h3>Upload a file to S3 Bucket:</h3>
+     <form action="/upload" method="POST" enctype="multipart/form-data">
+            <input type="file" name="file" value="file" id="fileUpload">
+            <br>
+            <input type="submit" name="upload" value="Upload to S3" class="google-chart">
+     </form>
+
+     <br>
+     <a href="https://s3.console.aws.amazon.com/s3/buckets/s3-bucket-281?region=us-east-1&tab=objects" target="_blank"><button class="google-chart">Go to S3</button></a>
+
+ </div>
+
+{% endblock content %}
+
+{% block javascript %}
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+        google.charts.load("current", {packages:["corechart"]});
+        google.charts.setOnLoadCallback(drawPieChart);
+        google.charts.setOnLoadCallback(drawCurveChart);
+        google.charts.setOnLoadCallback(drawDonutChart);
+        google.charts.setOnLoadCallback(drawHistogramChart);
+
+        function drawPieChart() {
+            var data1 = google.visualization.arrayToDataTable([
+                ['Task', 'Hours per Day'],
+                ['Active', {{active_cars}}],
+                ['Inactive', {{inactive_cars}}]
+            ]);
+
+            var data2 = google.visualization.arrayToDataTable([
+                ['Task', 'Hours per Day'],
+                ['Sedan', {{num_sedan}}],
+                ['SUV', {{num_suv}}],
+                ['Limousine', {{num_limo}}],
+            ]);
+
+            var options1 = {
+                title: 'Active/Inactive Vehicle Statistics',
+                titleTextStyle: {
+                    fontSize: 20,
+                },
+                pieStartAngle: 100,
+                is3D: 'true',
+                pieHole: 0.5,
+                chartArea: { backgroundColor: '#B1CBBB' },
+                backgroundColor: '#B1CBBB',
+            };
+
+            var options2 = {
+                title: 'Vehicle Distribution Statistics',
+                titleTextStyle: {
+                    fontSize: 20,
+                },
+                pieStartAngle: 100,
+                is3D: true,
+                pieHole: 0.5,
+                chartArea: { backgroundColor: '#B1CBBB' },
+                backgroundColor: '#B1CBBB',
+            };
+
+            const chart_div1 = document.getElementById('piechart_3d1');
+            const chart1 = new google.visualization.PieChart(document.getElementById('piechart_3d1'));
+            const chart_div2 = document.getElementById('piechart_3d2');
+            const chart2 = new google.visualization.PieChart(document.getElementById('piechart_3d2'));
+
+            google.visualization.events.addListener(chart1, 'ready', function () {
+            chart_div1.innerHTML = '<img src="' + chart1.getImageURI() + '">';
+            document.getElementById('pie1').outerHTML = '<a class="google-chart" download href="' + chart1.getImageURI() + '">Download Chart</a>';
+            });
+
+            google.visualization.events.addListener(chart2, 'ready', function () {
+            chart_div2.innerHTML = '<img src="' + chart2.getImageURI() + '">';
+            document.getElementById('pie2').outerHTML = '<a class="google-chart" download href="' + chart2.getImageURI() + '">Download Chart</a>';
+            });
+
+            chart1.draw(data1, options1);
+            chart2.draw(data2, options2)
+        }
+
+      function drawCurveChart() {
+        var data = google.visualization.arrayToDataTable([
+          [ 'Usage', 'Battery Life(Electric Vehicles)'],
+          [19, 23], [34, 43],  [52, 13]
+        ]);
+
+        var options = {
+          title: 'Vehicle Metrics',
+          titleTextStyle: {
+              fontSize: 20,
+          },
+          curveType: 'function',
+          chartArea: { backgroundColor: '#B1CBBB' },
+          backgroundColor: '#B1CBBB',
+          legend: { position: 'bottom' }
+        };
+
+        var chart_div = document.getElementById('curve_chart');
+        var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+        google.visualization.events.addListener(chart, 'ready', function () {
+        chart_div.innerHTML = '<img src="' + chart.getImageURI() + '">';
+        document.getElementById('curve').outerHTML = '<a class="google-chart" download href="' + chart.getImageURI() + '">Download Chart</a>';
+        });
+
+        chart.draw(data, options);
+      }
+
+      function drawDonutChart() {
+          var other = {{ total_cars }} - {{ num_tesla}} - {{num_lucid}} - {{num_hyundai}} - {{ num_honda }}
+          var data = google.visualization.arrayToDataTable([
+              ['Task', 'Hours per Day'],
+              ['Tesla', {{ num_tesla }}],
+              ['Lucid', {{ num_lucid }}],
+              ['Hyundai', {{ num_hyundai }}],
+              ['Honda', {{ num_honda }}],
+              ['Other', other]
+          ])
+
+        var options = {
+        title: 'Vehicle Distribution',
+        titleTextStyle: {
+            fontSize: 20,
+        },
+        pieHole: 0.4,
+        chartArea: { backgroundColor: '#B1CBBB' },
+        backgroundColor: '#B1CBBB',
+        };
+
+        var chart_div = document.getElementById('donutchart');
+        var chart = new google.visualization.PieChart(document.getElementById('donutchart'));
+        google.visualization.events.addListener(chart, 'ready', function () {
+        chart_div.innerHTML = '<img src="' + chart.getImageURI() + '">';
+        document.getElementById('donut').outerHTML = '<a class="google-chart" download href="' + chart.getImageURI() + '">Download Chart</a>';
+        });
+
+        chart.draw(data, options);
+      }
+
+    </script>
+
+{%  endblock %}
+
