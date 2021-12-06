@@ -144,17 +144,23 @@ def dashboardadmin():
     page = request.args.get('page', 1, type=int)
     page1 = request.args.get('page1', 1, type=int)
 
-    data = Car.query.paginate(page=page, per_page=5)  # data from database
-    user_data = User.query.paginate(page=page1, per_page=5)
+    # data = Car.query.paginate(page=page, per_page=5)  # data from database
+    car_data = Car.query.order_by(Car.id.desc()).paginate(page=page, per_page=10)
+    user_data = User.query.paginate(page=page1, per_page=10)
 
     random_no = []
-    for row in data.items:
+    for row in car_data.items:
         random_no.append(random.randint(50, 100))
 
     move_state = []
-    for row in data.items:
+    for row in car_data.items:
         move_state.append(random.choice(['stopped', 'forward', 'backward', 'idle']))
-    return render_template('home/dashboard-admin.html', query=data, user_query=user_data, battery=random_no, state=move_state, zip=zip)
+
+    vehicle_miles = []
+    for row in car_data.items:
+        vehicle_miles.append(round(random.uniform(10.0, 12000.0), 2))
+    return render_template('home/dashboard-admin.html', query=car_data, user_query=user_data,
+                           battery=random_no, state=move_state, zip=zip, vehicle_miles=vehicle_miles)
 
 
 @blueprint.route('/dashboard-owner', methods=['GET', 'POST'])
