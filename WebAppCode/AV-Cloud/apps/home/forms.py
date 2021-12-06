@@ -23,3 +23,6 @@ class DashboardForm(FlaskForm):
     destination = TextAreaField('destination', id='destination')
     cartype = SelectField('cartype', id='cartype', choices=[('', 'View car types'), ('Sedan', 'Sedan'), ('SUV', 'SUV'), ('Limousine', 'Limousine')])
     book = SubmitField('book')
+
+"""class ReloadAmountForm(FlaskForm):    
+    amount"""

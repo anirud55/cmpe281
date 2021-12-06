@@ -75,6 +75,7 @@ class Ride(db.Model):
     trip_status = Column(String(255))
     ride_date = Column(Date)
     est_amount = Column(Integer)
+    rewards = Column(Integer)
 
     def __repr__(self):
         return '<RideDetails: {}'.format(self.source)

@@ -9,7 +9,7 @@ from apps.home.forms import UpdateSettingsForm, DashboardForm
 from apps.authentication.models import User, Car, Ride
 from apps import db, login_manager
 import boto3
-from datetime import date
+from datetime import date,datetime
 import random
 import requests, json
 import re
@@ -39,9 +39,10 @@ def dashboard():
             # We need user id to fetch user old transaction details.
             print(request.form['source'])
             print(request.form['destination'])
-            distance, duration, fare = calculateDistance(request.form['source'], request.form['destination'])
+            distance, duration, fare,rewards = calculateDistance(request.form['source'], request.form['destination'],cartype)
             print("fare", fare)
             print("duration", duration)
+            print("rewards", rewards)
             ride = Ride(
                 ride=car,
                 source=request.form['source'],
@@ -50,21 +51,56 @@ def dashboard():
                 ride_date=today,
                 trip_status="Booked",
                 payment=0,
+                est_amount=fare,
+                rewards = rewards
+            )
+            db.session.add(ride)
+            db.session.commit()
+            return render_template('home/dashboard.html', segment='dashboard', form=dashboard_form, car=car, est_amt=fare,
+                                   est_dur=duration,rewards=rewards)
+        else:
+            car_type = request.form['cartype']
+            return render_template('home/dashboard.html', segment='dashboard', form=dashboard_form, error=True,
+                                   carType=car_type)
+    elif 'schedule' in request.form:
+        cartype = request.form['cartype']
+        car = Car.query.filter_by(cartype=cartype, active='false').first()
+        user = User.query.filter_by(username=current_user.username).first()
+        #today= date.today()
+        ride_sch = request.form['appt']
+        ride_sch_obj = datetime.strptime(ride_sch, 
+                                 "%Y-%m-%dT%H:%M")
+        print(ride_sch_obj)                         
+        ride_day = ride_sch_obj.date()
+        #scheduled_time = request.form['appt']
+        if (car != None):
+            car.active = 'false'
+            user_id = user.id
+            # We need user id to fetch user old transaction details.
+            print(request.form['source'])
+            print(request.form['destination'])
+            distance, duration, fare = calculateDistance(request.form['source'], request.form['destination'],cartype)
+            print("fare", fare)
+            print("duration", duration)
+            ride = Ride(
+                ride=car,
+                source=request.form['source'],
+                destination=request.form['destination'],
+                userId=user_id,
+                ride_date=ride_day,
+                trip_status="Scheduled",
+                payment=0,
                 est_amount=fare
             )
             db.session.add(ride)
             db.session.commit()
             return render_template('home/dashboard.html', segment='dashboard', form=dashboard_form, car=car, est_amt=fare,
-                                   est_dur=duration)
-        else:
-            car_type = request.form['cartype']
-            return render_template('home/dashboard.html', segment='dashboard', form=dashboard_form, error=True,
-                                   carType=car_type)
+                                   est_dur=duration, scheduled_ride = ride_sch_obj)
     else:
         return render_template('home/dashboard.html', segment='dashboard', form=dashboard_form)
 
 
-def calculateDistance(source, dest):
+def calculateDistance(source, dest,cartype):
     # Setting base price
     base_price = 2
 
@@ -91,7 +127,15 @@ def calculateDistance(source, dest):
     # Calculating price based on base price
     fare = round(distance * base_price, 2)
 
-    return distance, duration, fare
+    #Fares: sedan= fare *1 , SUV =fare*1.5 ,Limousine =fare*2
+    if cartype =="SUV":
+        fare= round(fare*1.5)
+    elif cartype =="Limousine":
+        fare*=2
+
+    rewards = round(fare * 0.1,2)   
+
+    return distance, duration, fare, rewards
 
 
 @blueprint.route('/dashboard-admin', methods=['GET', 'POST'])
@@ -229,4 +273,9 @@ def upload():
 def storage():
     print("hello")
     return render_template('home/storage.html', segment='index', contents=contents)
+
+@blueprint.route('/reloadAmount', methods=['GET', 'POST'])
+@login_required
+def reloadAmount():
+    return render_template('home/reload.html')
 

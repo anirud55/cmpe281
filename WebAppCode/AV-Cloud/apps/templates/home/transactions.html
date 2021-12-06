@@ -26,7 +26,7 @@
 {#    </div>#}
 </div>
 <div style="text-align: center; margin: auto; width: 37%;">
-    <div class="card border-light shadow-sm" style="background-image: linear-gradient(350deg, #141819, #3a5c64);
+    <div class="card border-light shadow-sm" style="background-image: linear-gradient(350deg, #18151a, #0221ac);
     padding: 4%;">
         <div class="card-body">
             <div class="row d-block d-xl-flex align-items-center">
@@ -34,7 +34,9 @@
                     <h2 class="h5" style="color: white;">{{user.username}}</h2>
                     <h3 class="mb-1" style="color: white;">Available Amount: $ {{'%0.2f' % user.amount|float}}</h3>
                 </div>
-                <button class="btn btn-white" style="width: 35%; margin: auto;">Add Amount</button>
+                <a href=reloadAmount>
+                    <button class="btn btn-white" style="width: 35%; margin: auto;">Add Amount</button>
+                </a>    
             </div>
         </div>
     </div>
@@ -52,6 +54,7 @@
                 <th>Amount</th>
                 <th>Trip Status</th>
                 <th>Trip Fare</th>
+                <th>Rewards</th>
             </tr>
         </thead>
         <tbody>
@@ -64,17 +67,24 @@
                 <td><span class="fw-normal">{{row.ride_date}}</span></td>
                 <td><span class="fw-bold">{{row.payment}}</span></td>
                 {% if row.trip_status != None %}
-                {% if row.trip_status == 'Complete' %}
+                {% if row.trip_status == 'Completed' %}
                 <td><span style="color: #15cb15;">{{row.trip_status}}</span></td>
                 {% elif row.trip_status == 'Cancelled' %}
                 <td><span style="color: red;">{{row.trip_status}}</span></td>
+                {% elif row.trip_status == 'Scheduled' %}
+                <td><span style="color: rgb(0, 102, 255);">{{row.trip_status}}</span></td>
                 {% else %}
                 <td><span style="color: #ffb300;">{{row.trip_status}}</span></td>
                 {% endif %}
                 {%else%}
-                <td><span style="color: #15cb15;">Complete</span></td>
+                <td><span style="color: #15cb15;">Completed</span></td>
                 {%endif%}
                 <td><span class="fw-bold">${{row.est_amount}}</span></td>
+                {% if row.trip_status == 'Completed' %}
+                <td><span class="fw-bold">{{row.rewards}}</span></td>
+                {% elif row.trip_status != 'Completed'%}
+                <td><span class="fw-bold">00</span></td>
+                {%endif%}
             </tr>
             {% endfor %}
         </tbody>
