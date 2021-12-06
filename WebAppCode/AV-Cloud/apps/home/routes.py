@@ -39,7 +39,7 @@ def dashboard():
             # We need user id to fetch user old transaction details.
             print(request.form['source'])
             print(request.form['destination'])
-            distance, duration, fare,rewards = calculateDistance(request.form['source'], request.form['destination'],cartype)
+            distance, duration, fare, rewards = calculateDistance(request.form['source'], request.form['destination'], cartype)
             print("fare", fare)
             print("duration", duration)
             print("rewards", rewards)
@@ -52,7 +52,7 @@ def dashboard():
                 trip_status="Booked",
                 payment=0,
                 est_amount=fare,
-                rewards = rewards
+                rewards= rewards
             )
             db.session.add(ride)
             db.session.commit()
@@ -68,9 +68,9 @@ def dashboard():
         user = User.query.filter_by(username=current_user.username).first()
         #today= date.today()
         ride_sch = request.form['appt']
-        ride_sch_obj = datetime.strptime(ride_sch, 
+        ride_sch_obj = datetime.strptime(ride_sch,
                                  "%Y-%m-%dT%H:%M")
-        print(ride_sch_obj)                         
+        print(ride_sch_obj)
         ride_day = ride_sch_obj.date()
         #scheduled_time = request.form['appt']
         if (car != None):
@@ -79,7 +79,7 @@ def dashboard():
             # We need user id to fetch user old transaction details.
             print(request.form['source'])
             print(request.form['destination'])
-            distance, duration, fare = calculateDistance(request.form['source'], request.form['destination'],cartype)
+            distance, duration, fare, rewards = calculateDistance(request.form['source'], request.form['destination'], cartype)
             print("fare", fare)
             print("duration", duration)
             ride = Ride(
@@ -90,17 +90,18 @@ def dashboard():
                 ride_date=ride_day,
                 trip_status="Scheduled",
                 payment=0,
-                est_amount=fare
+                est_amount=fare,
+                rewards=rewards
             )
             db.session.add(ride)
             db.session.commit()
             return render_template('home/dashboard.html', segment='dashboard', form=dashboard_form, car=car, est_amt=fare,
-                                   est_dur=duration, scheduled_ride = ride_sch_obj)
+                                   est_dur=duration, scheduled_ride= ride_sch_obj, rewards=rewards)
     else:
         return render_template('home/dashboard.html', segment='dashboard', form=dashboard_form)
 
 
-def calculateDistance(source, dest,cartype):
+def calculateDistance(source, dest, cartype):
     # Setting base price
     base_price = 2
 
@@ -127,14 +128,15 @@ def calculateDistance(source, dest,cartype):
     # Calculating price based on base price
     fare = round(distance * base_price, 2)
 
-    #Fares: sedan= fare *1 , SUV =fare*1.5 ,Limousine =fare*2
-    if cartype =="SUV":
-        fare= round(fare*1.5)
-    elif cartype =="Limousine":
-        fare*=2
 
-    rewards = round(fare * 0.1,2)   
+# Fares: sedan= fare *1 , SUV =fare*1.5 ,Limousine =fare*2
+    if cartype == "SUV":
+        fare = round(fare*1.5)
+    elif cartype == "Limousine":
+        fare *= 2
 
+    rewards = round((fare * 0.1), 2)
+    print(rewards, "lol")
     return distance, duration, fare, rewards
 
 
@@ -254,8 +256,13 @@ def transactions():
     page = request.args.get('page2', 1, type=int)
     data = Ride.query.filter_by(userId=current_user.id).paginate(page=page, per_page=5)  # data from database
     # user_data = User.query.filter_by(username=current_user.id).first()
+    if request.method == "POST":
+        add_amount = request.form["add_amount"]
+        current_user.amount = current_user.amount + int(add_amount)
+        db.session.commit()
 
-    return render_template('home/transactions.html', tripRecord=data, count=len(data.items), user=current_user)
+    return render_template('home/transactions.html', tripRecord=data, count=len(data.items),
+                           user=current_user, user_amount=current_user.amount)
 
 
 @blueprint.route('/upload', methods=['POST'])
@@ -280,8 +287,8 @@ def storage():
     print("hello")
     return render_template('home/storage.html', segment='index', contents=contents)
 
-@blueprint.route('/reloadAmount', methods=['GET', 'POST'])
+@blueprint.route('/reload', methods=['GET', 'POST'])
 @login_required
-def reloadAmount():
+def reload():
     return render_template('home/reload.html')
 

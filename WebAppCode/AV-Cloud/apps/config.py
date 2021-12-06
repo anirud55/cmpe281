@@ -9,8 +9,7 @@ class Config(object):
     SECRET_KEY = config('SECRET_KEY', default='S#perS3crEt_007')
 
     # This will create a file in <app> FOLDER
-    # SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'db.sqlite3')
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://admin:12345678@rds-281.crtai12tfp3w.us-east-2.rds.amazonaws.com/AV_CLOUD_281'
+    SQLALCHEMY_DATABASE_URI = 'YOUR DB URI'
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 

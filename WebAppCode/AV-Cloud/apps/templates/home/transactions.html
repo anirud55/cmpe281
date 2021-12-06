@@ -18,12 +18,6 @@
             </ol>
         </nav>
     </div>
-{#    <div class="btn-toolbar mb-2 mb-md-0">#}
-{#        <div class="btn-group">#}
-{#            <button type="button" class="btn btn-sm btn-outline-primary">Share</button>#}
-{#            <button type="button" class="btn btn-sm btn-outline-primary">Export</button>#}
-{#        </div>#}
-{#    </div>#}
 </div>
 <div style="text-align: center; margin: auto; width: 37%;">
     <div class="card border-light shadow-sm" style="background-image: linear-gradient(350deg, #18151a, #0221ac);
@@ -32,11 +26,11 @@
             <div class="row d-block d-xl-flex align-items-center">
                 <div class="d-none d-sm-block mb-4">
                     <h2 class="h5" style="color: white;">{{user.username}}</h2>
-                    <h3 class="mb-1" style="color: white;">Available Amount: $ {{'%0.2f' % user.amount|float}}</h3>
+                    <h3 class="mb-1" style="color: white;">Available Amount: $ {{'%0.2f' % user_amount|float}}  </h3>
                 </div>
-                <a href=reloadAmount>
+                <a href=/reload>
                     <button class="btn btn-white" style="width: 35%; margin: auto;">Add Amount</button>
-                </a>    
+                </a>
             </div>
         </div>
     </div>
@@ -81,9 +75,9 @@
                 {%endif%}
                 <td><span class="fw-bold">${{row.est_amount}}</span></td>
                 {% if row.trip_status == 'Completed' %}
-                <td><span class="fw-bold">{{row.rewards}}</span></td>
+                <td><span class="fw-bold">${{row.rewards}}</span></td>
                 {% elif row.trip_status != 'Completed'%}
-                <td><span class="fw-bold">00</span></td>
+                <td><span class="fw-bold">$0</span></td>
                 {%endif%}
             </tr>
             {% endfor %}
