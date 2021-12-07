@@ -51,7 +51,7 @@ def login():
     if current_user.role == 'admin':
         return redirect(url_for('home_blueprint.dashboardadmin'))
     elif current_user.role == 'owner':
-        return redirect(url_for('home_blueprint.dashboardowner'))
+        return redirect(url_for('home_blueprint.dashboardOwner'))
     else:
         return redirect(url_for('home_blueprint.dashboard'))
 
@@ -101,12 +101,13 @@ def register():
                 cartype=request.form['cartype'],
                 active='false',
                 roadService='No Service',
-                vehicleState='Idle'
+                vehicleState='Idle',
+                miles=10
             )
             db.session.add(car)
             db.session.commit()
         return render_template('accounts/register.html',
-                               msg='User created Sucessfully.  <u><a href="/login">Please Login here</a></u>',
+                               msg='User created Successfully.  <u><a href="/login">Please Login here</a></u>',
                                success=True,
                                form=create_account_form)
     else:

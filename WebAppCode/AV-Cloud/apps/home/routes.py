@@ -31,10 +31,12 @@ def dashboard():
     if 'book' in request.form:
         cartype = request.form['cartype']
         car = Car.query.filter_by(cartype=cartype, active='false').first()
+        car_state = Car.query.filter_by(cartype=cartype, vehicleState='Idle').first()
         user = User.query.filter_by(username=current_user.username).first()
         today = date.today()
         if (car != None):
             car.active = 'true'
+            car_state.vehicleState = 'Moving'
             user_id = user.id
             # We need user id to fetch user old transaction details.
             print(request.form['source'])
@@ -164,7 +166,7 @@ def dashboardadmin():
 
 @blueprint.route('/dashboard-owner', methods=['GET', 'POST'])
 @login_required
-def dashboardowner():
+def dashboardOwner():
     data = Car.query.filter_by(user_id=current_user.id).all()  # data from database
     carrides_owned = []
     Amount = 0
@@ -173,7 +175,11 @@ def dashboardowner():
         carrides_owned.extend(rides)
 
     for i in carrides_owned:
+        if i.trip_status == "Completed":
+            i.payment = i.est_amount
+            print(i.payment, "lal")
         Amount = int(int(Amount) + int(i.payment))
+    db.session.commit()
     return render_template('home/dashboard-owner.html', query=data, carrides=carrides_owned, user=current_user,
                            amount=Amount)
 
@@ -212,7 +218,6 @@ def stats():
     car_owners = User.query.filter_by(role= 'owner').count()
     car_users = User.query.filter_by(role='user').count()
     num_cars = Car.query.filter(Car.user_id).count()
-    num_sedan = Car.query.filter_by(cartype='Sedan').count()
     num_suv = Car.query.filter_by(cartype='SUV').count()
     num_limo = Car.query.filter_by(cartype='Limousine').count()
     active_cars = Car.query.filter_by(active='true').count()
@@ -252,7 +257,15 @@ def stats():
 def transactions():
     page = request.args.get('page2', 1, type=int)
     data = Ride.query.filter_by(userId=current_user.id).paginate(page=page, per_page=5)  # data from database
-    # user_data = User.query.filter_by(username=current_user.id).first()
+    # vehicle_active = Car.query.filter_by(userId=current_user.id, active='true').first()
+    # vehicle_state = Car.query.filter_by(vehicleState='Idle').first()
+
+    for val in data.items:
+        if val.trip_status == "Completed":
+            current_user.amount = current_user.amount - int(val.est_amount)
+            val.payment = current_user.amount
+            db.session.commit()
+
     if request.method == "POST":
         add_amount = request.form["add_amount"]
         current_user.amount = current_user.amount + int(add_amount)
@@ -278,40 +291,22 @@ def upload():
     return render_template('home/upload.html', msg=msg)
 
 
-@blueprint.route('/storage')
-@login_required
-def storage():
-    print("hello")
-    return render_template('home/storage.html', segment='index', contents=contents)
-
 @blueprint.route('/reload', methods=['GET', 'POST'])
 @login_required
 def reload():
     return render_template('home/reload.html')
-    
 
 @blueprint.route('/dashboard-imagedb')
 @login_required
 def dashboardimagedb():
     contents = show_image(BUCKET_NAME)
     # print("[INFO] : The content = ", contents)
-    return render_template('/home/dashboard-imagedb.html', files=contents)
+    return render_template('home/dashboard-imagedb.html', files=contents)
 
 
 def show_image(bucket):
-    # print("[INFO] : The content = ", s3.get_bucket_website(Bucket='BUCKET_NAME'))
-    # public_urls = []
-    # try:
-    #     for item in s3.list_objects(Bucket=bucket)['Contents']:
-    #         # print("[INFO] : The contents inside item = ", item.Key)
-    #         presigned_url = s3.generate_presigned_url('get_object', Params = {'Bucket': bucket, 'Key': item['Key']}, ExpiresIn = 100)
-    #         public_urls.append(presigned_url)
-    # except Exception as e:
-    #     print("[ERROR] : ", e)
-    #     pass
-    # print("[INFO] : The contents inside show_image = ", public_urls)
-    session = boto3.Session( 
-         aws_access_key_id=access_key, 
+    session = boto3.Session(
+         aws_access_key_id=access_key,
          aws_secret_access_key=secret_access_key)
     buck = session.resource('s3')
     my_bucket = buck.Bucket(BUCKET_NAME)
@@ -324,8 +319,8 @@ def show_image(bucket):
 
 @blueprint.route('/delete', methods=['POST'])
 def delete():
-    session = boto3.Session( 
-         aws_access_key_id=access_key, 
+    session = boto3.Session(
+         aws_access_key_id=access_key,
          aws_secret_access_key=secret_access_key)
     buck = session.resource('s3')
     my_bucket = buck.Bucket(BUCKET_NAME)
@@ -337,8 +332,8 @@ def delete():
 
 @blueprint.route('/download', methods=['POST'])
 def download():
-    session = boto3.Session( 
-         aws_access_key_id=access_key, 
+    session = boto3.Session(
+         aws_access_key_id=access_key,
          aws_secret_access_key=secret_access_key)
     buck = session.resource('s3')
     my_bucket = buck.Bucket(BUCKET_NAME)
@@ -349,13 +344,9 @@ def download():
         mimetype='text/plain',
         headers={"Content-Disposition": "attachment;filename={}".format(key)}
     )
-    # summaries = []
-    # for my_bucket_object in my_bucket.objects.all():
-    #     summaries.append(my_bucket_object.key)
-    # return redirect(url_for('dashboard-imagedb'))
 
 
 @blueprint.route('/dashboard-sensordata')
 @login_required
 def dashboardsensordata():
-    return render_template('/home/dashboard-sensordata.html')
+    return render_template('home/dashboard-sensordata.html')
