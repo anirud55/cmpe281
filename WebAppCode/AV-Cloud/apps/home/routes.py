@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 
 from apps.home import blueprint
-from flask import render_template, redirect, url_for, request, session, send_file, flash
+from flask import render_template, redirect, url_for, request, session, send_file, flash, Response
 from flask_login import login_required, current_user
 
 from jinja2 import TemplateNotFound
@@ -288,3 +288,74 @@ def storage():
 @login_required
 def reload():
     return render_template('home/reload.html')
+    
+
+@blueprint.route('/dashboard-imagedb')
+@login_required
+def dashboardimagedb():
+    contents = show_image(BUCKET_NAME)
+    # print("[INFO] : The content = ", contents)
+    return render_template('/home/dashboard-imagedb.html', files=contents)
+
+
+def show_image(bucket):
+    # print("[INFO] : The content = ", s3.get_bucket_website(Bucket='BUCKET_NAME'))
+    # public_urls = []
+    # try:
+    #     for item in s3.list_objects(Bucket=bucket)['Contents']:
+    #         # print("[INFO] : The contents inside item = ", item.Key)
+    #         presigned_url = s3.generate_presigned_url('get_object', Params = {'Bucket': bucket, 'Key': item['Key']}, ExpiresIn = 100)
+    #         public_urls.append(presigned_url)
+    # except Exception as e:
+    #     print("[ERROR] : ", e)
+    #     pass
+    # print("[INFO] : The contents inside show_image = ", public_urls)
+    session = boto3.Session( 
+         aws_access_key_id=access_key, 
+         aws_secret_access_key=secret_access_key)
+    buck = session.resource('s3')
+    my_bucket = buck.Bucket(BUCKET_NAME)
+    summaries = []
+    for my_bucket_object in my_bucket.objects.all():
+        summaries.append(my_bucket_object.key)
+        # print("[INFO] : The contents inside show_image = ", my_bucket_object.key)
+    return summaries
+
+
+@blueprint.route('/delete', methods=['POST'])
+def delete():
+    session = boto3.Session( 
+         aws_access_key_id=access_key, 
+         aws_secret_access_key=secret_access_key)
+    buck = session.resource('s3')
+    my_bucket = buck.Bucket(BUCKET_NAME)
+    key = request.form['key']
+    my_bucket.Object(key).delete()
+    flash('File deleted successfully')
+    return redirect(url_for('dashboard-imagedb'))
+
+
+@blueprint.route('/download', methods=['POST'])
+def download():
+    session = boto3.Session( 
+         aws_access_key_id=access_key, 
+         aws_secret_access_key=secret_access_key)
+    buck = session.resource('s3')
+    my_bucket = buck.Bucket(BUCKET_NAME)
+    key = request.form['key']
+    file_obj = my_bucket.Object(key).get()
+    return Response(
+        file_obj['Body'].read(),
+        mimetype='text/plain',
+        headers={"Content-Disposition": "attachment;filename={}".format(key)}
+    )
+    # summaries = []
+    # for my_bucket_object in my_bucket.objects.all():
+    #     summaries.append(my_bucket_object.key)
+    # return redirect(url_for('dashboard-imagedb'))
+
+
+@blueprint.route('/dashboard-sensordata')
+@login_required
+def dashboardsensordata():
+    return render_template('/home/dashboard-sensordata.html')
