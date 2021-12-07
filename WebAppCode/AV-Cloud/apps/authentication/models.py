@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 
 from flask_login import UserMixin
-from sqlalchemy import Column, Integer, String, ForeignKey, Date, LargeBinary
+from sqlalchemy import Column, Integer, String, ForeignKey, Date, LargeBinary, DECIMAL
 from sqlalchemy.orm import relationship
 from apps import db, login_manager
 from apps.authentication.util import hash_pass
@@ -57,6 +57,7 @@ class Car(db.Model):
     active = Column(String(255))
     roadService = Column(String(255))
     vehicleState = Column(String(255))
+    miles = Column(Integer)
     ride = relationship('Ride', backref='ride', lazy='dynamic', primaryjoin='Car.id == Ride.car_id')
 
     def __repr__(self):
