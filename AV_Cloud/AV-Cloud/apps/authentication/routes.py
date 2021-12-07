@@ -52,7 +52,7 @@ def login():
     if current_user.role == 'admin':
         return redirect(url_for('home_blueprint.dashboardadmin'))
     elif current_user.role == 'owner':
-        return redirect(url_for('home_blueprint.dashboardOwner'))
+        return redirect(url_for('home_blueprint.dashboardowner'))
     else:
         return redirect(url_for('home_blueprint.dashboard'))
 

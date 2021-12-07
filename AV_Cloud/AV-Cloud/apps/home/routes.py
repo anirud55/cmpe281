@@ -164,7 +164,7 @@ def dashboardadmin():
 
 @blueprint.route('/dashboard-owner', methods=['GET', 'POST'])
 @login_required
-def dashboardOwner():
+def dashboardowner():
     data = Car.query.filter_by(user_id=current_user.id).all()  # data from database
     carrides_owned = []
     Amount = 0
