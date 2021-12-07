@@ -8,10 +8,10 @@
 {% block content %}
 
 <div>
-    <span><a href="https://account.mongodb.com/account/login" class="book-ride" type="button" target="_blank"
-            rel="noopener noreferrer">Access Sensor Data</a></span>
-    <span><a href="https://220177423396.signin.aws.amazon.com/console" class="book-ride" type="button"
-            target="_blank" rel="noopener noreferrer">Access Image Data</a></span>
+    <span><a href="{{ url_for('home_blueprint.dashboardsensordata') }}" class="btn btn-primary"
+        type="button">Access Sensor Data</a></span>
+    <span><a href="{{ url_for('home_blueprint.dashboardimagedb') }}" class="btn btn-primary" 
+        type="button">Access Image Data</a></span>
 </div>
 <div class="card border-light shadow-sm mb-4 mt-4">
     <div class="card-header d-sm-flex flex-row align-items-center flex-0">
