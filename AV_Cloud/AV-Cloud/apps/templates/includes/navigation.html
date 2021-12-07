@@ -1,0 +1,44 @@
+<nav class="navbar navbar-top navbar-expand navbar-dashboard navbar-dark ps-0 pe-2 pb-0">
+  <div class="container-fluid px-0">
+    <div class="d-flex justify-content-between w-100" id="navbarSupportedContent">
+      <div class="d-flex align-items-center">
+      </div>
+      <!-- Navbar links -->
+      <ul class="navbar-nav align-items-center">
+        <li class="nav-item dropdown">
+          <a class="nav-link text-dark me-lg-3 icon-notifications dropdown-toggle" data-unread-notifications="true"
+            href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span class="icon icon-sm">
+              <span class="fas fa-bell bell-shake"></span>
+              <span class="icon-badge rounded-circle unread-notifications"></span>
+            </span>
+          </a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle pt-1 px-0" href="#" role="button" data-bs-toggle="dropdown"
+            aria-expanded="false">
+            <div class="media d-flex align-items-center">
+              <img id="avatar" alt="Image placeholder"
+                src="/static/assets/img/team/profile-picture-2.jpg">
+              <div class="media-body ms-2 text-dark align-items-center d-none d-lg-block">
+                <span class="mb-0 right-bar fw-bold txt">
+                  Current User: <strong>{{ current_user.username }}</strong>
+                </span>
+                  <span>
+                      <a href="{{ url_for('authentication_blueprint.logout') }}" class="log-out"><strong>Log Out</strong></a>
+                    </span>
+              </div>
+            </div>
+          </a>
+          <div class="dropdown-menu dashboard-dropdown dropdown-menu-end mt-2 py-0">
+            <a class="dropdown-item rounded-top fw-bold" href="{{ url_for('home_blueprint.settings') }}">
+              <span class="far fa-user-circle"></span>My Profile</a>
+            <div role="separator" class="dropdown-divider my-0"></div>
+            <a class="dropdown-item rounded-bottom fw-bold" href="{{ url_for('authentication_blueprint.logout') }}">
+              <span class="fas fa-sign-out-alt text-danger"></span>Logout</a>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

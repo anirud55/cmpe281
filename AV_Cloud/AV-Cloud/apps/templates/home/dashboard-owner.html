@@ -1,0 +1,157 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Tables {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+<div style="text-align: center; margin: auto; width: 37%;">
+    <div class="card border-light shadow-sm" style="background-image: linear-gradient(350deg, #18151a, #0221ac);
+     padding: 4%;">
+        <div class="card-body">
+            <div class="row d-block d-xl-flex align-items-center">
+                <div class="d-none d-sm-block mb-4">
+                    <h2 class="h5" style="color: white;">{{user.username}}</h2>
+                    <h3 class="mb-1" style="color: white;">Available Amount: $ {{'%0.2f' % amount|float}}
+                    </h3>
+                </div>
+                <button class="btn btn-white" style="width: 35%; margin: auto;">Transfer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card border-light shadow-sm mb-4 mt-4">
+    <div class="card-header d-sm-flex flex-row align-items-center flex-0">
+        <div class="d-block mb-3 mb-sm-0">
+            <div class="h5 fw-normal mb-2">Car Information</div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-centered table-nowrap mb-0 rounded">
+                <thead class="thead-light">
+                    <tr>
+
+                        <th class="border-0">Car Model</th>
+                        <th class="border-0">Car No</th>
+                        <th class="border-0">Car Color</th>
+                        <th class="border-0">Car Type</th>
+                        <th class="border-0">Car Status</th>
+                        <th class="border-0">Battery</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Item -->
+
+                    {% for row in query %}
+                    <tr>
+                        <td class="border-0 fw-bold">
+                            {{row.carmodel}}
+                        </td>
+                        <td class="border-0">
+                            {{row.carNo}}
+                        </td>
+                        <td class="border-0">
+                            {{row.carcolor}}
+                        </td>
+                        <td class="border-0">
+                            {{row.cartype}}
+                        </td>
+                        <td class="border-0">
+                            {% if row.active == 'true'%}
+                            Active
+                            {% else %}
+                            Inactive
+                            {%endif%}
+                        </td>
+                        <td class="border-0">
+                            <div class="row d-flex align-items-center">
+                                <div class="col-12 col-xl-2 px-0">
+                                    <div class="small fw-bold">51%</div>
+                                </div>
+                                <div class="col-12 col-xl-10 px-0 px-xl-1">
+                                    <div class="progress progress-lg mb-0">
+                                        <div class="progress-bar bg-dark" role="progressbar" aria-valuenow="51"
+                                            aria-valuemin="0" aria-valuemax="100" style="width: 51%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    <!-- End of Item -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="card border-light shadow-sm">
+    <div class="card-header d-sm-flex flex-row align-items-center flex-0">
+        <div class="d-block mb-3 mb-sm-0">
+            <div class="h5 fw-normal mb-2">Rides Taken</div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-centered table-nowrap mb-0 rounded">
+                <thead class="thead-light">
+                    <tr>
+                        <th class="border-0">#</th>
+                        <th class="border-0">Source</th>
+                        <th class="border-0">Destination</th>
+                        <th class="border-0">Date</th>
+                        <th class="border-0">Trip Status</th>
+                        <th class="border-0">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Item -->
+
+                    {% for row in carrides %}
+                    <tr>
+                        <td class="border-0 fw-bold">
+                            {{loop.index}}
+                        </td>
+                        <td class="border-0">
+                            {{row.source}}
+                        </td>
+                        <td class="border-0">
+                            {{row.destination}}
+                        </td>
+                        <td class="border-0">
+                            {{row.ride_date}}
+                        </td>
+                        {% if row.trip_status == 'Complete' %}
+                        <td class="border-0" style="color: #15cb15;">
+                            {{row.trip_status}}
+                        </td>
+                        {% elif row.trip_status == 'Cancelled' %}
+                        <td class="border-0" style="color: red;">
+                            {{row.trip_status}}
+                        </td>
+                        {% else %}
+                        <td class="border-0" style="color: #ffb300;">
+                            {{row.trip_status}}
+                        </td>
+                        {% endif %}
+                        <td class="border-0">
+                            {{row.payment}}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    <!-- End of Item -->
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}

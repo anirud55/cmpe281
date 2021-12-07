@@ -1,0 +1,127 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Trip Details {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4">
+    <div class="d-block mb-4 mb-md-0">
+        <nav aria-label="breadcrumb" class="d-none d-md-inline-block">
+            <ol class="breadcrumb breadcrumb-dark breadcrumb-transparent">
+                <li class="breadcrumb-item"><a href="#"><span class="fas fa-home"></span></a></li>
+                <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Trip Details</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<div style="text-align: center; margin: auto; width: 37%;">
+    <div class="card border-light shadow-sm" style="background-image: linear-gradient(350deg, #18151a, #0221ac);
+    padding: 4%;">
+        <div class="card-body">
+            <div class="row d-block d-xl-flex align-items-center">
+                <div class="d-none d-sm-block mb-4">
+                    <h2 class="h5" style="color: white;">{{user.username}}</h2>
+                    <h3 class="mb-1" style="color: white;">Available Amount: $ {{'%0.2f' % user_amount|float}}  </h3>
+                </div>
+                <a href=/reload>
+                    <button class="btn btn-white" style="width: 35%; margin: auto;">Add Amount</button>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="table-settings mb-4">
+</div>
+<div class="card card-body shadow-sm table-wrapper table-responsive">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Source</th>
+                <th>Destination</th>
+                <th>Date</th>
+                <th>Amount</th>
+                <th>Trip Status</th>
+                <th>Trip Fare</th>
+                <th>Rewards</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in tripRecord.items %}
+
+            <tr>
+                <td><span class="fw-normal">{{loop.index}}</span></td>
+                <td><span class="fw-normal">{{row.source}}</span></td>
+                <td><span class="fw-normal">{{row.destination}}</span></td>
+                <td><span class="fw-normal">{{row.ride_date}}</span></td>
+                <td><span class="fw-bold">{{row.payment}}</span></td>
+                {% if row.trip_status != None %}
+                {% if row.trip_status == 'Completed' %}
+                <td><span style="color: #15cb15;">{{row.trip_status}}</span></td>
+                {% elif row.trip_status == 'Cancelled' %}
+                <td><span style="color: red;">{{row.trip_status}}</span></td>
+                {% elif row.trip_status == 'Scheduled' %}
+                <td><span style="color: rgb(0, 102, 255);">{{row.trip_status}}</span></td>
+                {% else %}
+                <td><span style="color: #ffb300;">{{row.trip_status}}</span></td>
+                {% endif %}
+                {%else%}
+                <td><span style="color: #15cb15;">Completed</span></td>
+                {%endif%}
+                <td><span class="fw-bold">${{row.est_amount}}</span></td>
+                {% if row.trip_status == 'Completed' %}
+                <td><span class="fw-bold">${{row.rewards}}</span></td>
+                {% elif row.trip_status != 'Completed'%}
+                <td><span class="fw-bold">$0</span></td>
+                {%endif%}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="card-footer" style="padding-bottom: 0px;">
+        <!-- Pagination Links-->
+        <div class="text-right">
+            <a href="{{ url_for('home_blueprint.transactions', page2=tripRecord.prev_num) }}" class="btn btn-outline-dark
+            {% if tripRecord.page == 1 %}disabled{% endif %}" style="padding: 0.35rem 0.65rem; font-size: 0.8rem;">
+                &laquo;
+            </a>
+            <!-- Loop through the number of pages to display a link for each-->
+            {% for page_num in tripRecord.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2)
+            %}
+            {% if page_num %}
+            <!-- Check for the active page and set the link to "Active"-->
+            {% if tripRecord.page == page_num %}
+            <a href="{{ url_for('home_blueprint.transactions', page2=page_num) }}" class="btn btn-dark"
+                style="padding: 0.35rem 0.65rem; font-size: 0.8rem;">
+                {{ page_num }}
+            </a>
+            {% else %}
+            <a href="{{ url_for('home_blueprint.transactions', page2=page_num) }}" class="btn btn-outline-dark"
+                style="padding: 0.35rem 0.65rem; font-size: 0.8rem;">
+                {{ page_num }}
+            </a>
+            {% endif %}
+            {% else %}
+            ...
+            {% endif %}
+            {% endfor %}
+            <a href="{{ url_for('home_blueprint.transactions', page2=tripRecord.next_num) }}" class="btn btn-outline-dark
+{% if tripRecord.page == tripRecord.pages %}disabled{% endif %}" style="padding: 0.35rem 0.65rem; font-size: 0.8rem;">
+                &raquo;
+            </a>
+        </div>
+        <p class="text-right mt-3" style="font-size: 12px;">
+            Showing page {{ tripRecord.page }} of {{ tripRecord.pages }}
+        </p>
+    </div>
+</div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}

@@ -1,0 +1,63 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Image Data   {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="card border-light shadow-sm mb-4 mt-4">
+    <div class="card-header d-sm-flex flex-row align-items-center flex-0">
+        <div class="d-block mb-3 mb-sm-0">
+            <div class="h5 fw-normal mb-2">All Car Images</div>
+            <!-- <p>Created: {{ files.creation_date }}</p> -->
+            <!-- <p>{{files }}</p> -->
+        </div>
+    </div>
+    <table class="table table-striped">
+        <tr>
+          <th>Filename</th>
+          <!-- <th>Last Modified</th> -->
+          <th>Action</th>
+        </tr>
+        {% for f in files %}
+        <tr>
+          <td>{{ f }}</td>
+          <!-- <td>{{ f.last_modified }}</td> -->
+          <td class="td-buttons d-flex">
+            <!-- <form class="delete-form" action="{{ url_for('home_blueprint.delete') }}" method="POST">
+              <input type="hidden" name="key" value="{{ f }}">
+              <button type="submit" class="btn btn-danger btn-sm">
+                <i class="fa fa-trash-alt"></i>
+              </button>
+            </form> -->
+            <form class="download-form" action="{{ url_for('home_blueprint.download') }}" method="POST">
+              <input type="hidden" name="key" value="{{ f }}">
+              <button type="submit" class="btn btn-default btn-sm">
+                <i class="fa fa-download"></i>
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </table>
+</div>
+<!-- <div class="content">
+  <div>
+    <h3>Here are media files inside the S3 bucket:</h3>
+    <ul>
+      {% for item in contents %}
+        <li>
+          <img src={{ item }} style="width: 250px">
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div> -->
+
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}

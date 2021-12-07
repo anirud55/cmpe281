@@ -1,0 +1,221 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Tables {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+<div>
+    <span><a href="{{ url_for('home_blueprint.dashboardsensordata') }}" class="btn btn-primary"
+        type="button">Access Sensor Data</a></span>
+    <span><a href="{{ url_for('home_blueprint.dashboardimagedb') }}" class="btn btn-primary"
+        type="button">Access Image Data</a></span>
+</div>
+<div class="card border-light shadow-sm mb-4 mt-4">
+    <div class="card-header d-sm-flex flex-row align-items-center flex-0">
+        <div class="d-block mb-3 mb-sm-0">
+            <div class="h5 fw-normal mb-2">All Vehicle Information</div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-centered table-nowrap mb-0 rounded">
+                <thead class="thead-light">
+                    <tr>
+                        <th class="border-0">Vehicle Model</th>
+                        <th class="border-0">Vehicle Number</th>
+                        <th class="border-0">Vehicle Color</th>
+                        <th class="border-0">Vehicle Type</th>
+                        <th class="border-0">Service States</th>
+                        <th class="border-0">Vehicle Battery</th>
+                        <th class="border-0">Road Service</th>
+                        <th class="border-0">Moving State</th>
+                        <th class="border-0">Vehicle Miles</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Item -->
+
+                    {% for row, num in zip(query.items, battery) %}
+                    <tr>
+                        <td class="border-0 fw-bold">
+                            {{row.carmodel}}
+                        </td>
+                        <td class="border-0">
+                            {{row.carNo}}
+                        </td>
+                        <td class="border-0">
+                            {{row.carcolor}}
+                        </td>
+                        <td class="border-0">
+                            {{row.cartype}}
+                        </td>
+                        <td class="border-0">
+                            {% if row.active == 'true'%}
+                            Active
+                            {% else %}
+                            Inactive
+                            {%endif%}
+                        </td>
+                        <td class="border-0">
+                            <div class="row d-flex align-items-center">
+                                <div class="col-12 col-xl-2 px-0">
+                                    <div class="small fw-bold">{{num}}%</div>
+                                </div>
+                                <div class="col-12 col-xl-10 px-0 px-xl-1">
+                                    <div class="progress progress-lg mb-0">
+                                        <div class="progress-bar bg-dark" role="progressbar" aria-valuenow="{{num}}"
+                                            aria-valuemin="0" aria-valuemax="100" style="width: {{num}}%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    <td class="border-0">
+                        {{ row.roadService }}
+                    </td>
+                    <td class="border-0">
+                        {%  if row.active == 'true' %}
+                        Moving
+                        {% else %}
+                        Idle
+                        {%  endif %}
+                    </td>
+                    <td class="border-0">
+                            <div class="small fw-bold">{{row.miles}}</div>
+                    </td>
+                    </tr>
+                    {% endfor %}
+                    <!-- End of Item -->
+                </tbody>
+            </table>
+            <div class="card-footer" style="padding-bottom: 0px;">
+                <!-- Pagination Links-->
+                <div class="text-right">
+                    <a href="{{ url_for('home_blueprint.dashboardadmin', page=query.prev_num) }}" class="btn btn-outline-dark
+                    {% if query.page == 1 %}disabled{% endif %}" style="padding: 0.35rem 0.65rem; font-size: 0.8rem;">
+                        &laquo;
+                    </a>
+                    <!-- Loop through the number of pages to display a link for each-->
+                    {% for page_num in query.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2)
+                    %}
+                    {% if page_num %}
+                    <!-- Check for the active page and set the link to "Active"-->
+                    {% if query.page == page_num %}
+                    <a href="{{ url_for('home_blueprint.dashboardadmin', page=page_num) }}" class="btn btn-dark"
+                        style="padding: 0.35rem 0.65rem; font-size: 0.8rem;">
+                        {{ page_num }}
+                    </a>
+                    {% else %}
+                    <a href="{{ url_for('home_blueprint.dashboardadmin', page=page_num) }}" class="btn btn-outline-dark"
+                        style="padding: 0.35rem 0.65rem; font-size: 0.8rem;">
+                        {{ page_num }}
+                    </a>
+                    {% endif %}
+                    {% else %}
+                    ...
+                    {% endif %}
+                    {% endfor %}
+                    <a href="{{ url_for('home_blueprint.dashboardadmin', page=query.next_num) }}" class="btn btn-outline-dark
+       {% if query.page == query.pages %}disabled{% endif %}" style="padding: 0.35rem 0.65rem; font-size: 0.8rem;">
+                        &raquo;
+                    </a>
+                </div>
+                <p class="text-right mt-3" style="font-size: 12px;">
+                    Showing page {{ query.page }} of {{ query.pages }}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card border-light shadow-sm">
+    <div class="card-header d-sm-flex flex-row align-items-center flex-0">
+        <div class="d-block mb-3 mb-sm-0">
+            <div class="h5 fw-normal mb-2">All Registered Users</div>
+        </div>
+    </div>
+{#    <div class="media d-flex align-items-center">#}
+{#              <img id="avatar" alt="Image placeholder"#}
+{#                src="/static/assets/img/team/profile-picture-2.jpg">#}
+{#    </div>#}
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-centered table-nowrap mb-0 rounded">
+                <thead class="thead-light">
+                    <tr>
+                        <th class="border-0">Username</th>
+                        <th class="border-0">Role</th>
+                        <th class="border-0">Email</th>
+                        <th class="border-0">Phone Number</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Item -->
+                    {% for row in user_query.items %}
+                    <tr>
+                        <td class="border-0">
+                            {{row.username}}
+                        </td>
+                        <td class="border-0">
+                            {{row.role}}
+                        </td>
+                        <td class="border-0">
+                            {{row.email}}
+                        </td>
+                        <td class="border-0">
+                            {{row.phonenumber}}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    <!-- End of Item -->
+                </tbody>
+            </table>
+            <div class="card-footer" style="padding-bottom: 0px;">
+                <!-- Pagination Links-->
+                <div class="text-right">
+                    <a href="{{ url_for('home_blueprint.dashboardadmin', page1=user_query.prev_num) }}" class="btn btn-outline-dark
+                    {% if user_query.page == 1 %}disabled{% endif %}"
+                        style="padding: 0.35rem 0.65rem; font-size: 0.8rem;">
+                        &laquo;
+                    </a>
+                    <!-- Loop through the number of pages to display a link for each-->
+                    {% for page_num in user_query.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2)
+                    %}
+                    {% if page_num %}
+                    <!-- Check for the active page and set the link to "Active"-->
+                    {% if user_query.page == page_num %}
+                    <a href="{{ url_for('home_blueprint.dashboardadmin', page1=page_num) }}" class="btn btn-dark"
+                        style="padding: 0.35rem 0.65rem; font-size: 0.8rem;">
+                        {{ page_num }}
+                    </a>
+                    {% else %}
+                    <a href="{{ url_for('home_blueprint.dashboardadmin', page1=page_num) }}"
+                        class="btn btn-outline-dark" style="padding: 0.35rem 0.65rem; font-size: 0.8rem;">
+                        {{ page_num }}
+                    </a>
+                    {% endif %}
+                    {% else %}
+                    ...
+                    {% endif %}
+                    {% endfor %}
+                    <a href="{{ url_for('home_blueprint.dashboardadmin', page1=user_query.next_num) }}" class="btn btn-outline-dark
+       {% if user_query.page == user_query.pages %}disabled{% endif %}"
+                        style="padding: 0.35rem 0.65rem; font-size: 0.8rem;">
+                        &raquo;
+                    </a>
+                </div>
+                <p class="text-right mt-3" style="font-size: 12px;">
+                    Showing page {{ user_query.page }} of {{ user_query.pages }}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}

@@ -1,0 +1,122 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Transactions {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4">
+      <div>
+          <div class="dropdown-menu dashboard-dropdown dropdown-menu-start mt-2 py-0">
+              <a class="dropdown-item fw-normal rounded-top" href="#"><span class="far fa-file-alt me-2"></span>Document</a>
+              <a class="dropdown-item fw-normal" href="#"><span class="far fa-comment-dots me-2"></span>Message</a>
+              <a class="dropdown-item fw-normal" href="#"><span class="fas fa-box-open me-2"></span>Product</a>
+              <div role="separator" class="dropdown-divider my-0"></div>
+              <a class="dropdown-item fw-normal rounded-bottom" href="#"><span class="fas fa-rocket text-danger me-2"></span>My Plan</a>
+          </div>
+      </div>
+      <div>
+          <button type="button" class="btn btn-dark me-2"><span class="fas fa-calendar-alt"></span></button>
+          <button class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <span class="fas fa-clipboard me-2"></span>Reports
+              <span class="icon icon-small ms-1"><span class="fas fa-chevron-down"></span></span>
+          </button>
+          <div class="dropdown-menu dashboard-dropdown dropdown-menu-start mt-2 py-0">
+              <a class="dropdown-item fw-normal rounded-top" href="#"><span class="fas fa-box-open"></span>Products</a>
+              <a class="dropdown-item fw-normal" href="#"><span class="fas fa-store"></span>Customers</a>
+              <a class="dropdown-item fw-normal" href="#"><span class="fas fa-cart-arrow-down"></span>Orders</a>
+              <a class="dropdown-item fw-normal" href="#"><span class="fas fa-chart-pie"></span>Console</a>
+              <div role="separator" class="dropdown-divider my-0"></div>
+              <a class="dropdown-item fw-normal rounded-bottom" href="#"><span class="fas fa-rocket text-success"></span>All Reports</a>
+          </div>
+      </div>
+  </div>
+  <div class="row">
+      <div class="col-12 col-xl-8">
+          <div class="card card-body shadow-sm mb-4">
+
+                <div class="col-12 col-xl-12">
+                  <div class="card card-body shadow-sm mb-4">
+                      <h2 class="h5 mb-4">Upload Training Images</h2>
+                      <div class="d-flex align-items-center">
+                          <div class="me-3">
+                              <!-- Avatar -->
+                              <div class="user-avatar xl-avatar">
+                                  <img class="rounded" src="/static/assets/img/profile-cover.jpg" alt="change cover photo">
+
+
+                              </div>
+                          </div>
+                          <div class="file-field">
+                              <div class="d-flex justify-content-xl-center ms-xl-3">
+                                  <div class="d-flex">
+                                    <span class="icon icon-md"><span class="fas fa-paperclip me-3"></span></span> <input type="file">
+                                    <div class="d-md-block text-left">
+                                        <div class="fw-normal text-dark mb-1">Choose Image</div>
+                                         <form method="POST" action="/upload" enctype=multipart/form-data>
+            <input type=file name=file>
+            <input type=submit value=Upload>
+
+
+<!--                                             <button class="btn btn-secondary text-dark me-2 dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">-->
+<!--              <span class="fas fa-plus me-2"></span>Upload-->
+<!--          </button>-->
+          </form>
+                                        <div class="text-gray small">JPG, GIF or PNG. Max size of 800K</div>
+                                    </div>
+                                  </div>
+                              </div>
+                            </div>
+
+                      </div>
+                  </div>
+              </div>
+
+                <div class="col-12 col-xl-12">
+                  <div class="card card-body shadow-sm mb-4">
+                      <h2 class="h5 mb-4">These are your uploaded files</h2>
+                      <h2 class="h5 mb-4">Click on the filename to download it</h2>
+                                <ul>
+            {% for item in contents %}
+              <li>
+                <a href="/download/{{ item.Key }}"> {{ item.Key }} </a>
+<!--             <img src=" https://avcloudbucket.s3.us-east-2.amazonaws.com/uploads/DJI_0002-64_mask.jpg" width="100" height="100">-->
+</li>
+            {% endfor %}
+          </ul>
+
+                  </div>
+              </div>
+
+          </div>
+
+      </div>
+      <div class="col-12 col-xl-4">
+          <div class="row">
+              <div class="col-12 mb-4">
+                  <div class="card shadow-sm text-center p-0">
+                      <div class="profile-cover rounded-top" data-background="/static/assets/img/profile-cover.jpg"></div>
+                      <div class="card-body pb-5">
+                          <img src="/static/assets/img/team/profile-picture-1.jpg" class="user-avatar large-avatar rounded-circle mx-auto mt-n7 mb-4" alt="Neil Portrait">
+                          <h4 class="h3">
+                            {{ current_user.username }}
+                          </h4>
+                          <h5 class="fw-normal">
+                            {{ current_user.email }}
+                          </h5>
+                          <p class="text-gray mb-4">San Jose, USA</p>
+                      </div>
+                    </div>
+              </div>
+          </div>
+      </div>
+  </div>
+
+
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}
