@@ -14,7 +14,7 @@ import random
 import requests, json
 import re
 from werkzeug.utils import secure_filename
-from apps.credentials import access_key, secret_access_key
+from apps.credentials import access_key, secret_access_key, google_api_key
 from sqlalchemy import func
 
 
@@ -36,12 +36,7 @@ def dashboard():
         if (car != None):
             car.active = 'true'
             user_id = user.id
-            # We need user id to fetch user old transaction details.
-            print(request.form['source'])
-            print(request.form['destination'])
             distance, duration, fare, rewards = calculateDistance(request.form['source'], request.form['destination'], cartype)
-            print("fare", fare)
-            print("duration", duration)
             print("rewards", rewards)
             ride = Ride(
                 ride=car,
@@ -66,19 +61,14 @@ def dashboard():
         cartype = request.form['cartype']
         car = Car.query.filter_by(cartype=cartype, active='false').first()
         user = User.query.filter_by(username=current_user.username).first()
-        #today= date.today()
         ride_sch = request.form['appt']
         ride_sch_obj = datetime.strptime(ride_sch,
                                  "%Y-%m-%dT%H:%M")
         print(ride_sch_obj)
         ride_day = ride_sch_obj.date()
-        #scheduled_time = request.form['appt']
         if (car != None):
             car.active = 'false'
             user_id = user.id
-            # We need user id to fetch user old transaction details.
-            print(request.form['source'])
-            print(request.form['destination'])
             distance, duration, fare, rewards = calculateDistance(request.form['source'], request.form['destination'], cartype)
             print("fare", fare)
             print("duration", duration)
@@ -106,7 +96,7 @@ def calculateDistance(source, dest, cartype):
     base_price = 2
 
     # enter your api key here
-    api_key = 'AIzaSyAhuWEjnuSmY-N43m_5yhg4d4WU_LO084s'
+    api_key = google_api_key
 
     # url variable store url
     url = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=" + source + "&destinations=" + dest + "&key=" + api_key
@@ -136,7 +126,7 @@ def calculateDistance(source, dest, cartype):
         fare *= 2
 
     rewards = round((fare * 0.1), 2)
-    print(rewards, "lol")
+    print(rewards)
     return distance, duration, fare, rewards
 
 
@@ -175,7 +165,7 @@ def dashboardowner():
     for i in carrides_owned:
         if i.trip_status == "Completed":
             i.payment = i.est_amount
-            print(i.payment, "lal")
+            print(i.payment)
         Amount = int(int(Amount) + int(i.payment))
     db.session.commit()
     return render_template('home/dashboard-owner.html', query=data, carrides=carrides_owned, user=current_user,
@@ -207,8 +197,6 @@ def settings():
 @blueprint.route('/stats', methods=['GET'])
 @login_required
 def stats():
-    # chart_data = {'Task': 'Hours per Day', 'Active' : 80, 'Inactive': 20}
-
     # data from database
     total_users = User.query.filter(User.id).count()
     total_cars = Car.query.filter(Car.id).count()
@@ -255,8 +243,6 @@ def stats():
 def transactions():
     page = request.args.get('page2', 1, type=int)
     data = Ride.query.filter_by(userId=current_user.id).paginate(page=page, per_page=5)  # data from database
-    # vehicle_active = Car.query.filter_by(userId=current_user.id, active='true').first()
-    # vehicle_state = Car.query.filter_by(vehicleState='Idle').first()
 
     for val in data.items:
         if val.trip_status == "Completed":
@@ -294,11 +280,11 @@ def upload():
 def reload():
     return render_template('home/reload.html')
 
+
 @blueprint.route('/dashboard-imagedb')
 @login_required
 def dashboardimagedb():
     contents = show_image(BUCKET_NAME)
-    # print("[INFO] : The content = ", contents)
     return render_template('home/dashboard-imagedb.html', files=contents)
 
 
@@ -311,7 +297,6 @@ def show_image(bucket):
     summaries = []
     for my_bucket_object in my_bucket.objects.all():
         summaries.append(my_bucket_object.key)
-        # print("[INFO] : The contents inside show_image = ", my_bucket_object.key)
     return summaries
 
 

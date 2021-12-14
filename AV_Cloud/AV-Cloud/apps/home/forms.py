@@ -6,6 +6,7 @@ from wtforms.validators import InputRequired, Email, DataRequired
 
 ## Settings
 
+
 class UpdateSettingsForm(FlaskForm):
     firstname = TextAreaField('firstname'     , id='firstname_create')
     lastname = TextAreaField('lastname'     , id='last_create')
@@ -17,6 +18,7 @@ class UpdateSettingsForm(FlaskForm):
     address = TextAreaField('address'     , id='address')
     houseno = TextAreaField('houseno', id='houseno')
     saveall = SubmitField('saveall')
+
 
 class DashboardForm(FlaskForm):
     source = TextAreaField('source', id='source')
